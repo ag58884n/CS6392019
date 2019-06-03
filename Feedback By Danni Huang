@@ -1,0 +1,11 @@
+
+I am Danni Huang and I tested the app of ADITYA GAJJAR.
+The Min and Target versions of the SDKs are 19 and  28. 
+I tested the app on an emulator with OS Nexus 5X API 24(Android 7.0, API). 
+The app does not crash.
+The app does display:
+Hello Aditya Gajjar
+And
+Welcome in CS 639 Summer 2019
+
+The name of the student is displayed.
