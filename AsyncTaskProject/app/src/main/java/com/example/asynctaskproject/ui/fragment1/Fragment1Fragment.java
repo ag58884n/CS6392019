@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -29,8 +30,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
+
 public class Fragment1Fragment extends Fragment {
 
+    ImageView i;
     private Fragment1ViewModel mViewModel;
 
     public static Fragment1Fragment newInstance() {
@@ -40,29 +44,48 @@ public class Fragment1Fragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment1_fragment, container, false);
+                             @Nullable Bundle savedInstanceState)
+    {
+        String url = "https://raw.githubusercontent.com/ag58884n/CS6392019/master/AsyncTaskProject/655370-ahmedabad-022618-02.jpg";
+        View view = inflater.inflate(R.layout.fragment1_fragment, container, false);
+        i = view.findViewById(R.id.imageView);
+        new GetAsyncImage().execute(url);
+        TextView textView = view.findViewById(R.id.textView);
+        textView.setText("AHMEDABAD, INDIA");
+        return view;
     }
-    private static final String TAG="MainActivity";
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(Fragment1ViewModel.class);
-        // TODO: Use the ViewModel
-        Button button =(Button) getActivity().findViewById(R.id.button4);
-        button.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view) {
-                ImageView imageView = getActivity().findViewById(R.id.imageView);
-                Glide.with(getActivity().getApplicationContext()).load("https://raw.githubusercontent.com/ag58884n/CS6392019/master/AsyncTaskProject/655370-ahmedabad-022618-02.jpg")
-                        .placeholder(R.drawable.ic_autorenew_black_24dp)
-                        .error(R.drawable.ic_error_black_24dp)
-                        .into(imageView);
-                TextView textView = getActivity().findViewById(R.id.textView);
-                textView.setText("AHMEDABAD");
+
+    private class GetAsyncImage extends AsyncTask<String, Void, Bitmap> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... parms) {
+
+            Bitmap bitmap = null;
+            try {
+                URL url = new URL(parms[0]);
+                HttpsURLConnection con = (HttpsURLConnection)url.openConnection();
+                if(con.getResponseCode() != 200){
+                    throw new Exception("Failed to Connect");
+                }
+                InputStream is = con.getInputStream();
+                bitmap = BitmapFactory.decodeStream(is);
+            }catch(Exception e){
+                Log.e("Image", "Failed to load Image", e);
+                Log.e("error", e.getMessage());
             }
-        });
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            i.setImageBitmap(bitmap);
+
+        }
     }
 
 }
